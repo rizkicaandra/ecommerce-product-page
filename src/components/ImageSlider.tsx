@@ -1,4 +1,6 @@
 'use client';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
 
 export default function ImageSlider({
   currentImage,
@@ -9,6 +11,8 @@ export default function ImageSlider({
   readonly setCurrentImage: (value: number) => void;
   readonly setProductPreview: (value: boolean) => void;
 }) {
+  const [isLoading, setIsLoading] = useState(false);
+
   const images = [
     '/image-product-1-thumbnail.jpg',
     '/image-product-2-thumbnail.jpg',
@@ -17,7 +21,14 @@ export default function ImageSlider({
   ];
 
   function handleClick(index: number) {
-    setCurrentImage(index);
+    let newIndex = 0;
+
+    if (index > 4) newIndex = 1;
+    else if (index < 1) newIndex = 4;
+    else newIndex = index;
+
+    setIsLoading(true);
+    setCurrentImage(newIndex);
   }
 
   return (
@@ -28,22 +39,38 @@ export default function ImageSlider({
           className='cursor-pointer hover:opacity-75'
           onClick={() => setProductPreview(true)}
         >
-          <img
-            src={`/image-product-${currentImage}.jpg`}
-            alt='product'
-            className='lg:rounded-15px absolute -top-9 w-full object-cover md:-top-48 lg:top-0 lg:h-fit'
-          />
+          <AnimatePresence mode='wait'>
+            <motion.img
+              key={currentImage}
+              src={`/image-product-${currentImage}.jpg`}
+              alt='product'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              onLoad={() => setIsLoading(false)}
+              className={`lg:rounded-15px absolute -top-9 w-full object-cover md:-top-48 lg:top-0 lg:h-fit ${
+                isLoading ? 'opacity-50 grayscale' : 'opacity-100'
+              } `}
+            />
+          </AnimatePresence>
         </button>
         <div className='absolute flex h-full w-full items-center justify-between p-4 lg:hidden'>
           <button
             type='button'
             className='flex h-10 w-10 items-center justify-center rounded-full bg-white'
+            onClick={() => {
+              handleClick(currentImage - 1);
+            }}
           >
             <img src='/icon-previous.svg' alt='previous' className='w-2' />
           </button>
           <button
             type='button'
             className='flex h-10 w-10 items-center justify-center rounded-full bg-white'
+            onClick={() => {
+              handleClick(currentImage + 1);
+            }}
           >
             <img src='/icon-next.svg' alt='next' className='w-2' />
           </button>

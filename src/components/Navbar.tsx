@@ -74,7 +74,7 @@ export default function Navbar({
         </nav>
 
         {isOpen && (
-          <div className='fixed inset-0 flex h-screen w-full overflow-y-hidden transition-all duration-200 ease-in-out'>
+          <div className='fixed inset-0 z-20 flex h-screen w-full overflow-y-hidden transition-all duration-200 ease-in-out'>
             <motion.div
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
